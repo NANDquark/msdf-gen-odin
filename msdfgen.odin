@@ -105,21 +105,9 @@ EdgeColor :: enum c.int {
 when ODIN_OS == .Windows {
 	foreign import msdfgen_lib "build/Release/msdfgen-c.lib"
 } else {
-	foreign import msdfgen_lib {
-		"build/libmsdfgen-c.a",
-		"build/lib/msdfgen/libmsdfgen-core.a",
-		"system:stdc++",
-	}
+	foreign import msdfgen_lib {"build/libmsdfgen-c.a", "build/lib/msdfgen/libmsdfgen-core.a", "system:stdc++"}
 
-	foreign import msdfgen_ext_lib {
-		"build/libmsdfgen-ext-c.a",
-		"build/lib/msdfgen/libmsdfgen-ext.a",
-		"build/libmsdfgen-c.a",
-		"build/lib/msdfgen/libmsdfgen-core.a",
-		"system:freetype",
-		"system:png16",
-		"system:stdc++",
-	}
+	foreign import msdfgen_ext_lib {"build/libmsdfgen-ext-c.a", "build/lib/msdfgen/libmsdfgen-ext.a", "build/libmsdfgen-c.a", "build/lib/msdfgen/libmsdfgen-core.a", "system:freetype", "system:png16", "system:stdc++"}
 }
 
 @(default_calling_convention = "c")
@@ -186,33 +174,25 @@ FontCoordinateScaling :: enum c.int {
 	FONT_SCALING_LEGACY        = 2,
 }
 
-when ODIN_OS != .Windows {
-	@(default_calling_convention = "c")
-	foreign msdfgen_ext_lib {
-		@(link_name = "msdfgen_ext_initializeFreetype")
-		ext_initializeFreetype :: proc() -> ^FreetypeHandle ---
+@(default_calling_convention = "c")
+foreign msdfgen_ext_lib {
+	@(link_name = "msdfgen_ext_initializeFreetype")
+	ext_initializeFreetype :: proc() -> ^FreetypeHandle ---
 
-		@(link_name = "msdfgen_ext_deinitializeFreetype")
-		ext_deinitializeFreetype :: proc(library: ^FreetypeHandle) ---
+	@(link_name = "msdfgen_ext_deinitializeFreetype")
+	ext_deinitializeFreetype :: proc(library: ^FreetypeHandle) ---
 
-		@(link_name = "msdfgen_ext_loadFont")
-		ext_loadFont :: proc(library: ^FreetypeHandle, filename: cstring) -> ^FontHandle ---
+	@(link_name = "msdfgen_ext_loadFont")
+	ext_loadFont :: proc(library: ^FreetypeHandle, filename: cstring) -> ^FontHandle ---
 
-		@(link_name = "msdfgen_ext_destroyFont")
-		ext_destroyFont :: proc(font: ^FontHandle) ---
+	@(link_name = "msdfgen_ext_destroyFont")
+	ext_destroyFont :: proc(font: ^FontHandle) ---
 
-		@(link_name = "msdfgen_ext_loadGlyph")
-		ext_loadGlyph :: proc(
-			output: ^Shape,
-			font: ^FontHandle,
-			unicode: u32,
-			coordinate_scaling: FontCoordinateScaling,
-			out_advance: ^f64,
-		) -> bool ---
+	@(link_name = "msdfgen_ext_loadGlyph")
+	ext_loadGlyph :: proc(output: ^Shape, font: ^FontHandle, unicode: u32, coordinate_scaling: FontCoordinateScaling, out_advance: ^f64) -> bool ---
 
-		@(link_name = "msdfgen_ext_savePngF32_3")
-		ext_savePngF32_3 :: proc(bitmap: ^BitmapSection_F32_3, filename: cstring) -> bool ---
-	}
+	@(link_name = "msdfgen_ext_savePngF32_3")
+	ext_savePngF32_3 :: proc(bitmap: ^BitmapSection_F32_3, filename: cstring) -> bool ---
 }
 
 // Odin-friendly helper functions
@@ -302,51 +282,32 @@ make_bitmap_section_f32_4 :: proc(
 }
 
 freetype_initialize :: proc() -> ^FreetypeHandle {
-	when ODIN_OS == .Windows {
-		return nil
-	} else {
-		return ext_initializeFreetype()
-	}
+	return ext_initializeFreetype()
 }
 
 freetype_deinitialize :: proc(library: ^FreetypeHandle) {
-	when ODIN_OS != .Windows {
-		ext_deinitializeFreetype(library)
-	}
+	ext_deinitializeFreetype(library)
 }
 
 font_load :: proc(library: ^FreetypeHandle, filename: cstring) -> ^FontHandle {
-	when ODIN_OS == .Windows {
-		return nil
-	} else {
-		return ext_loadFont(library, filename)
-	}
+	return ext_loadFont(library, filename)
 }
 
 font_destroy :: proc(font: ^FontHandle) {
-	when ODIN_OS != .Windows {
-		ext_destroyFont(font)
-	}
+	ext_destroyFont(font)
 }
 
 font_load_glyph :: proc(
 	output: ^Shape,
 	font: ^FontHandle,
-	unicode: u32,
+	unicode: rune,
 	coordinate_scaling := FontCoordinateScaling.FONT_SCALING_EM_NORMALIZED,
 	out_advance: ^f64 = nil,
 ) -> bool {
-	when ODIN_OS == .Windows {
-		return false
-	} else {
-		return ext_loadGlyph(output, font, unicode, coordinate_scaling, out_advance)
-	}
+	out_advanced: f64
+	return ext_loadGlyph(output, font, u32(unicode), coordinate_scaling, out_advance)
 }
 
 save_png_f32_3 :: proc(bitmap: ^BitmapSection_F32_3, filename: cstring) -> bool {
-	when ODIN_OS == .Windows {
-		return false
-	} else {
-		return ext_savePngF32_3(bitmap, filename)
-	}
+	return ext_savePngF32_3(bitmap, filename)
 }

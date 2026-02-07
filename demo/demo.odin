@@ -27,7 +27,7 @@ main :: proc() {
 	defer msdf.Shape_destroy(shape)
 
 	advance: f64
-	if !msdf.font_load_glyph(shape, font, u32('A'), .FONT_SCALING_EM_NORMALIZED, &advance) {
+	if !msdf.font_load_glyph(shape, font, 'A', .FONT_SCALING_EM_NORMALIZED, &advance) {
 		fmt.eprintln("Failed to load glyph 'A'")
 		return
 	}
