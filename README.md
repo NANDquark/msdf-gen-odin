@@ -5,7 +5,8 @@ Odin bindings for [msdfgen](https://github.com/Chlumsky/msdfgen), with a local b
 - Core C API usage.
 - TTF glyph loading (FreeType) and PNG output via `msdfgen-ext`.
 
-`lib/msdfgen` should be treated as a clean git submodule. Local bridge code lives in `bridge/`.
+`lib/msdfgen` is an unmodified git submodule to keep it isolated.
+Bridge code between msdfgen and the odin bindings lives in `bridge/`.
 
 ## Dependencies (Linux)
 
@@ -30,8 +31,10 @@ sudo pacman -S --needed cmake gcc pkgconf freetype libpng
 
 ## Build
 
+The underlying `msdfgen` library and the C bridge code need to be built with CMake. Several optional dependencies are excluded. 
+
 ```bash
-git clone --recursive <your-repo-url>
+git clone --recursive https://github.com/NANDquark/msdf-gen-odin
 cd msdf-gen-odin
 git submodule update --init --recursive
 
@@ -44,18 +47,10 @@ cmake -S . -B build \
 cmake --build build --config Release
 ```
 
-## Verify
-
-```bash
-odin check . -no-entry-point -vet -vet-style
-odin check demo -no-entry-point
-odin test .
-```
-
 ## Run Demo
+
+The demo loads a TTF font, generates MSDF for glyph `'A'`, and writes `demo-msdf-A.png`.
 
 ```bash
 odin run demo
 ```
-
-The demo loads a TTF font, generates MSDF for glyph `'A'`, and writes `demo-msdf-A.png`.
