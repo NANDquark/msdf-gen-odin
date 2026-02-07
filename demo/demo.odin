@@ -6,7 +6,7 @@ import "core:fmt"
 import "core:strings"
 
 main :: proc() {
-	font_path := "demo/roboto-latin-ext-400-normal.ttf"
+	font_path := "demo/noto-sans-latin-400-normal.ttf"
 
 	ft := msdf.freetype_initialize()
 	if ft == nil {
@@ -43,7 +43,7 @@ main :: proc() {
 
 	width: c.int = 64
 	height: c.int = 64
-	pixels := make([]f32, int(width*height*3))
+	pixels := make([]f32, int(width * height * 3))
 	defer delete(pixels)
 	bitmap := msdf.make_bitmap_section_f32_3(raw_data(pixels), width, height, .BOTTOM_UP)
 
@@ -51,19 +51,13 @@ main :: proc() {
 	shape_width := bounds.r - bounds.l
 	shape_height := bounds.t - bounds.b
 	padding := 8.0
-	scale := (f64(width) - 2*padding) / max(shape_width, shape_height)
+	scale := (f64(width) - 2 * padding) / max(shape_width, shape_height)
 	px_range := 4.0
 	unit_range := px_range / scale
 	transform := msdf.make_sdf_transformation(
 		scale = msdf.Vector2{scale, scale},
-		translate = msdf.Vector2{
-			-bounds.l + padding/scale,
-			-bounds.b + padding/scale,
-		},
-		range = msdf.Range{
-			lower = -0.5 * unit_range,
-			upper =  0.5 * unit_range,
-		},
+		translate = msdf.Vector2{-bounds.l + padding / scale, -bounds.b + padding / scale},
+		range = msdf.Range{lower = -0.5 * unit_range, upper = 0.5 * unit_range},
 	)
 	config := msdf.make_msdf_generator_config(
 		overlap_support = true,
