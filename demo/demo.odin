@@ -3,31 +3,10 @@ package main
 import msdf ".."
 import "core:c"
 import "core:fmt"
-import "core:os"
 import "core:strings"
 
-find_system_font_path :: proc() -> string {
-	candidates := [?]string{
-		"/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-		"/usr/share/fonts/dejavu/DejaVuSans.ttf",
-		"/usr/share/fonts/TTF/DejaVuSans.ttf",
-		"/usr/share/fonts/liberation/LiberationSans-Regular.ttf",
-	}
-	for path in candidates {
-		if os.exists(path) {
-			return path
-		}
-	}
-	return ""
-}
-
 main :: proc() {
-	font_path := find_system_font_path()
-	if font_path == "" {
-		fmt.eprintln("No supported system font path found.")
-		fmt.eprintln("Set one of: /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
-		return
-	}
+	font_path := "demo/roboto-latin-ext-400-normal.ttf"
 
 	ft := msdf.freetype_initialize()
 	if ft == nil {
@@ -73,13 +52,18 @@ main :: proc() {
 	shape_height := bounds.t - bounds.b
 	padding := 8.0
 	scale := (f64(width) - 2*padding) / max(shape_width, shape_height)
+	px_range := 4.0
+	unit_range := px_range / scale
 	transform := msdf.make_sdf_transformation(
 		scale = msdf.Vector2{scale, scale},
 		translate = msdf.Vector2{
-			-bounds.l*scale + padding,
-			-bounds.b*scale + padding,
+			-bounds.l + padding/scale,
+			-bounds.b + padding/scale,
 		},
-		range = msdf.Range{lower = -4.0, upper = 4.0},
+		range = msdf.Range{
+			lower = -0.5 * unit_range,
+			upper =  0.5 * unit_range,
+		},
 	)
 	config := msdf.make_msdf_generator_config(
 		overlap_support = true,
@@ -87,7 +71,7 @@ main :: proc() {
 	)
 	msdf.generateMSDF(&bitmap, shape, &transform, &config)
 
-	output_path := "example-msdf-A.png"
+	output_path := "demo-msdf-A.png"
 	output_path_c, _ := strings.clone_to_cstring(output_path, context.temp_allocator)
 	if !msdf.save_png_f32_3(&bitmap, output_path_c) {
 		fmt.eprintln("Failed to save PNG output")

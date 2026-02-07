@@ -48,3 +48,7 @@ Makefile
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Project specific files
+debug_build
+demo-*.png

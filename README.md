@@ -15,7 +15,7 @@ Odin bindings for [msdfgen](https://github.com/Chlumsky/msdfgen), with a local b
 - FreeType development package
 - libpng development package
 
-Example installs:
+Dependency installs:
 
 ```bash
 # Debian/Ubuntu
@@ -48,24 +48,14 @@ cmake --build build --config Release
 
 ```bash
 odin check . -no-entry-point -vet -vet-style
-odin check example -no-entry-point
+odin check demo -no-entry-point
 odin test .
 ```
 
-## Run Example
+## Run Demo
 
 ```bash
-odin run example
+odin run demo
 ```
 
-The example loads a system TTF font, generates MSDF for glyph `'A'`, and writes `example-msdf-A.png`.
-
-## Use From Another Odin Project
-
-```odin
-import msdf "msdf:."
-```
-
-```bash
-odin run /path/to/your_program -collection:msdf=/absolute/path/to/msdf-gen-odin
-```
+The demo loads a TTF font, generates MSDF for glyph `'A'`, and writes `demo-msdf-A.png`.
