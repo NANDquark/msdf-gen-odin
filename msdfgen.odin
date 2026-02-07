@@ -191,6 +191,12 @@ foreign msdfgen_ext_lib {
 	@(link_name = "msdfgen_ext_loadGlyph")
 	ext_loadGlyph :: proc(output: ^Shape, font: ^FontHandle, unicode: u32, coordinate_scaling: FontCoordinateScaling, out_advance: ^f64) -> bool ---
 
+	@(link_name = "msdfgen_ext_loadGlyphByIndex")
+	ext_loadGlyphByIndex :: proc(output: ^Shape, font: ^FontHandle, glyph_index: u32, coordinate_scaling: FontCoordinateScaling, out_advance: ^f64) -> bool ---
+
+	@(link_name = "msdfgen_ext_getGlyphIndex")
+	ext_getGlyphIndex :: proc(font: ^FontHandle, unicode: u32, out_glyph_index: ^u32) -> bool ---
+
 	@(link_name = "msdfgen_ext_savePngF32_3")
 	ext_savePngF32_3 :: proc(bitmap: ^BitmapSection_F32_3, filename: cstring) -> bool ---
 }
@@ -306,6 +312,29 @@ font_load_glyph :: proc(
 ) -> bool {
 	out_advanced: f64
 	return ext_loadGlyph(output, font, u32(unicode), coordinate_scaling, out_advance)
+}
+
+font_load_glyph_by_index :: proc(
+	output: ^Shape,
+	font: ^FontHandle,
+	glyph_index: u32,
+	coordinate_scaling := FontCoordinateScaling.FONT_SCALING_EM_NORMALIZED,
+	out_advance: ^f64 = nil,
+) -> bool {
+	return ext_loadGlyphByIndex(output, font, glyph_index, coordinate_scaling, out_advance)
+}
+
+font_get_glyph_index :: proc(
+	font: ^FontHandle,
+	unicode: rune,
+	out_glyph_index: ^u32 = nil,
+) -> bool {
+	glyph_index: u32
+	dst := out_glyph_index
+	if dst == nil {
+		dst = &glyph_index
+	}
+	return ext_getGlyphIndex(font, u32(unicode), dst)
 }
 
 save_png_f32_3 :: proc(bitmap: ^BitmapSection_F32_3, filename: cstring) -> bool {

@@ -36,6 +36,28 @@ bool msdfgen_ext_loadGlyph(msdfgen_Shape *output, msdfgen_FontHandle *font, uint
 	);
 }
 
+bool msdfgen_ext_loadGlyphByIndex(msdfgen_Shape *output, msdfgen_FontHandle *font, uint32_t glyphIndex, msdfgen_FontCoordinateScaling coordinateScaling, double *outAdvance) {
+	if (!output || !font)
+		return false;
+	return loadGlyph(
+		*(Shape *) output,
+		(FontHandle *) font,
+		GlyphIndex((unsigned) glyphIndex),
+		(FontCoordinateScaling) coordinateScaling,
+		outAdvance
+	);
+}
+
+bool msdfgen_ext_getGlyphIndex(msdfgen_FontHandle *font, uint32_t unicode, uint32_t *outGlyphIndex) {
+	if (!font || !outGlyphIndex)
+		return false;
+	GlyphIndex glyphIndex;
+	if (!getGlyphIndex(glyphIndex, (FontHandle *) font, (unicode_t) unicode))
+		return false;
+	*outGlyphIndex = (uint32_t) glyphIndex.getIndex();
+	return true;
+}
+
 bool msdfgen_ext_savePngF32_3(const msdfgen_BitmapSection_F32_3 *bitmap, const char *filename) {
 #ifndef MSDFGEN_DISABLE_PNG
 	if (!bitmap || !bitmap->pixels || !filename)

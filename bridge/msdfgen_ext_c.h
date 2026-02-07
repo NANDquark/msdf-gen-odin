@@ -25,6 +25,8 @@ msdfgen_FontHandle *msdfgen_ext_loadFont(msdfgen_FreetypeHandle *library, const 
 void msdfgen_ext_destroyFont(msdfgen_FontHandle *font);
 
 bool msdfgen_ext_loadGlyph(msdfgen_Shape *output, msdfgen_FontHandle *font, uint32_t unicode, msdfgen_FontCoordinateScaling coordinateScaling, double *outAdvance);
+bool msdfgen_ext_loadGlyphByIndex(msdfgen_Shape *output, msdfgen_FontHandle *font, uint32_t glyphIndex, msdfgen_FontCoordinateScaling coordinateScaling, double *outAdvance);
+bool msdfgen_ext_getGlyphIndex(msdfgen_FontHandle *font, uint32_t unicode, uint32_t *outGlyphIndex);
 
 bool msdfgen_ext_savePngF32_3(const msdfgen_BitmapSection_F32_3 *bitmap, const char *filename);
 
